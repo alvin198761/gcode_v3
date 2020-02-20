@@ -1,0 +1,28 @@
+server:
+  port: 8090
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,application/javascript,text/css
+
+db_name : test_db
+db_port: 3306
+db_ip: 47.98.132.116:3306
+gencode:
+  database:
+    name: erp_laozhang
+    port: 3306
+    host: 47.98.132.116:3306
+  template:
+    dir: "../../templates/gen_templates/codetemplate"
+spring:
+  profiles:
+    active: dev
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://47.98.132.116:3306/test_db?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: T_dl123456
+
+
+
+
