@@ -61,3 +61,13 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+gcode_v3/.idea/
+*.log
+*.iml
+gcode_v3/code_common/target/
+gcode_v3/code_jdbc/target/
+gcode_v3/code_ui3/target/
+gcode_v3/code_utils/target/
+gcode_v3/code_ui3/src/main/resources/static/
+gcode_v3/code_ui3/src/main/resources/templates/
+
