@@ -1,5 +1,21 @@
 # 代码生成器第三版本
 
+##编译和运行
+1.安装 jdk8 +
+2.安装nodejs 8+
+3.到 gcode_v3/code_ui3/src/main/web-ui3  目录下,执行命令
+```sql
+    npm install --registry=https://registry.npm.taobao.org
+    
+    npm run build
+```
+4.到 gcode_v3 目录下,执行命令
+```sql
+    mvn install
+```
+5.运行 code_ui3 项目
+6.浏览器输入地址: [http://localhost:8090](http://localhost:8090)
+
 ## 新版介绍
 1.实现跨表生成
 2.集成sqleditor

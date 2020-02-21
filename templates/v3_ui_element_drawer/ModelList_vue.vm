@@ -1,7 +1,7 @@
 /*${table.comment}管理,作者:${author},日期:${time}*/
 <template>
       <div>
-            <el-form :inline="true">
+            <el-form :inline="true" class="searchForm">
                 #foreach($fi in $fList)
 				#if($fi.name != $id.name)
                     <el-form-item label="${fi.comment}">
@@ -143,7 +143,7 @@
 		load${fi.upperCamel}FkList(){
 			const that = this;
 			that.${dollar}postBody("/api/${fi.fkTableClassName}/queryLabelList",{}).then(res =>{
-				if(res.code != 0){
+				if(res.code !== 0){
 					that.${dollar}message.error(res.errmsg);
 					return ;
 				}
@@ -175,6 +175,12 @@
         
         that.${dollar}postBody("/api/${table.varName}/queryPage", requestData).then(res => {
 			  that.loading = false;
+			  if(res.code !== 0){
+				that.${dollar}message.error(res.errmsg);
+				that.dataList = [];
+				that.total = 0;
+				return ;
+			  }
 			  that.dataList = res.data.content;
 			  that.total = res.data.totalElements;
 			}).catch(res => {
@@ -196,7 +202,11 @@
           type: 'warning'
         }).then(() => {
           that.${dollar}post("/api/${table.varName}/delete", {${id.lowerCamel}: row.${id.lowerCamel}}).then(res => {
-				this.${dollar}message.success("删除成功");
+				if(res.code !== 0){
+					that.${dollar}message.error(res.errmsg);
+					return ;
+				}
+				that.${dollar}message.success("删除成功");
 				that.refresh();
 			  }).catch(res => {
 				that.${dollar}message.error("删除失败：" + res);

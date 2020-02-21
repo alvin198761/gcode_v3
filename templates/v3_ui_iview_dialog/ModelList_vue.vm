@@ -1,0 +1,202 @@
+/*${table.comment}管理,作者:${author},日期:${time}*/
+<template>
+      <div>
+            <Form :inline="true">
+                #foreach($fi in $fList)
+				#if($fi.name != $id.name)
+                    <FormItem label="${fi.comment}">
+						#if($fi.isFk == 1)
+						<!-- ${fi.lowerCamel} -->
+							<Select placeholder="请输入${fi.comment}" size="small" v-model="form.${fi.lowerCamel}" clearable style="width: 100%">
+								<Option
+										v-for="item in ${fi.lowerCamel}FkList"
+										:key="item.value"
+										:label="item.label"
+										:value="item.value">
+								</Option>
+							</Select>
+						#elseif ($fi.allTypeName == "java.util.Date")
+						<DatePicker size="small" v-model="form.${fi.lowerCamel}" type="daterange" range-separator="至"  start-placeholder="${fi.comment}开始" end-placeholder="${fi.comment}结束" clearable style="width: 100%"></DatePicker>
+						#elseif($fi.allTypeName == "java.lang.Long")
+						<InputNumber placeholder='请输入${fi.comment}' size="small" v-model='form.${fi.lowerCamel}'  clearable style="width: 100%"></InputNumber>
+						#elseif($fi.allTypeName == "java.lang.Integer")
+						<InputNumber placeholder='请输入${fi.comment}' size="small" v-model='form.${fi.lowerCamel}'  clearable style="width: 100%"></InputNumber>
+						#elseif($fi.allTypeName == "java.lang.Double")
+						<InputNumber placeholder='请输入${fi.comment}' size="small" v-model='form.${fi.lowerCamel}'  clearable style="width: 100%"></InputNumber>
+						#elseif($fi.allTypeName == "java.lang.Short")
+						<InputNumber placeholder='请输入${fi.comment}' size="small" v-model='form.${fi.lowerCamel}'  clearable style="width: 100%"></InputNumber>
+						#elseif($fi.allTypeName == "java.lang.Byte")
+						<Select placeholder="请输入${fi.comment}" size="small" v-model="form.${fi.lowerCamel}" clearable style="width: 100%">
+                            <Option
+                                    v-for="item in ${fi.lowerCamel}List"
+                                    :key="item.id"
+                                    :label="item.label"
+                                    :value="item.id">
+                            </Option>
+                        </Select>
+						#else 
+						<Input placeholder="请输入${fi.comment}" size="small" v-model="form.${fi.lowerCamel}" clearable style="width: 100%"></Input>
+						#end
+                    </FormItem>
+					#end
+                #end
+				  <FormItem>
+                        <Button icon="search" @click="refresh" title="根据输入条件查询" size="small">查询</Button>
+                        <Button icon="plus"   @click="doAdd()" title="添加" size="small" type="primary" >添加</Button>
+                      </FormItem>
+                </Form>
+             <Table :loading="loading" :columns="tableHeader" :data="dataList" style="width: 100%">
+            #foreach($fi in $fList)
+              <template slot-scope="{ row,index }" slot="col_${fi.lower_camel}">
+                <div>{{ row.${fi.lower_camel} }}</div>
+              </template>
+            #end
+            <template slot-scope="{ row,index }" slot="col_opt">
+              <div>
+              <Button type="primary" size="small" style="margin-right: 5px" @click="doEdit(row)">编辑</Button>
+              <Button type="primary" size="small"   style="margin-right: 5px" @click="doDelete(row)">删除</Button>
+              </div>
+            </template>
+            </Table>
+            <br/>
+            <div style="text-align: right" v-if="total > 0">
+              <Page size="small" :current="page" :total="total" show-total  @on-change="(curr) => {this.page = curr ; this.refresh();}"
+              show-sizer @on-page-size-change="(size) => { this.size = size ; this.refresh();}" :page-size="size"  ></Page>
+            </div>
+        <${table.className}Dialog ref="dialog" :refresh="refresh"></${table.className}Dialog>
+  </div>
+</template>
+<script>
+  import ${table.className}Dialog from './${table.className}Dialog.vue';
+  import ${table.className}ListExpand from './${table.className}ListExpand.vue';
+  import moment from 'moment';
+  export default {
+      components: { ${table.className}Dialog,${table.className}ListExpand },
+      data: function () {
+      return {
+	  tableHeader: [
+          { type: 'expand',  width: 50, render: (h, params) => { return h(${clsUpp}ListExpand, {  props: {row: params.row}  })  }  },
+          #foreach($fi in $fList)
+                  {title: '${fi.comment}', key: '${fi.lower_camel}', slot:'col_${fi.lower_camel}' },
+          #end
+          {            title: '操作',            width: 150,            slot : 'col_opt'          }
+        ],
+        total: 0,
+        page: 1,
+        size: 20,
+        dataList: [],
+        form: {
+        #foreach($fi in $fList)
+			#if($fi.name == $id.name)
+				//主键不输出
+			#elseif ($fi.allTypeName == "java.util.Date")
+				${fi.lowerCamel} : [moment(),moment()],// ${fi.comment}
+			#else
+				${fi.lowerCamel} : null,// ${fi.comment}
+			#end
+        #end
+        },
+        loading: false,
+		#foreach($fi in $fList)
+			#if($fi.allTypeName == "java.lang.Byte")
+			${fi.lowerCamel}List: [],
+			#elseif($fi.isFk == 1)
+			${fi.lowerCamel}FkList:[],
+			#end
+		#end
+      }
+    },
+    computed: {},
+    created: function () {
+      this.refresh();
+	  #foreach($fi in $fList)
+		#if($fi.isFk == 1)
+			this.load${fi.upperCamel}FkList();
+		#elseif($fi.allTypeName == "java.lang.Byte")
+			this.load${fi.upperCamel}List();
+	  	#end
+	  #end
+    },
+    methods: {
+	 #foreach($fi in $fList)
+		#if($fi.isFk == 1)
+		load${fi.upperCamel}FkList(){
+			const that = this;
+			that.${dollar}postBody("/api/${fi.fkTableClassName}/queryLabelList",{}).then(res =>{
+				if(res.code != 0){
+					that.${dollar}Message.error({content: res.errmsg});
+					return ;
+				}
+				that.${fi.lowerCamel}FkList = res.data;
+			}).catch(err => {
+				that.${dollar}Message.error({content:"获取数据出错:" + err});
+			})
+		},
+		#elseif($fi.allTypeName == "java.lang.Byte")
+		  load${fi.upperCamel}List(){
+			const that = this;
+			//todo 常量状态处理
+		  },
+	  	#end
+	#end
+      refresh() {
+        const that = this;
+        that.loading = true;
+		const requestData = {...that.form, page: that.page - 1, size: that.size};
+		#foreach($fi in $fList)
+			#if ($fi.allTypeName == "java.util.Date")
+			requestData.${fi.lowerCamel} = null;
+				if (that.form.${fi.lowerCamel} && that.form.${fi.lowerCamel}.length === 2) {
+					requestData.${fi.lowerCamel}Start=that.form.${fi.lowerCamel}[0];
+					requestData.${fi.lowerCamel}End=that.form.${fi.lowerCamel}[1];
+				}
+			#end
+		#end
+        
+        that.${dollar}postBody("/api/${table.varName}/queryPage", requestData).then(res => {
+			  that.loading = false;
+			  if(res.code !== 0){
+				that.${dollar}Message.error({content: res.errmsg ? res.errmsg : '获取${table.comment}列表失败'});
+				that.dataList = [];
+				that.total =  0;
+				return ;
+			  }
+			  that.dataList = res.data.content;
+			  that.total = res.data.totalElements;
+			}).catch(res => {
+			  that.${dollar}Message.error({content: '获取${table.comment}列表失败'});
+			  that.loading = false;
+			});
+      },
+      doAdd() {
+        this.${dollar}refs["dialog"].addDialog();
+      },
+      doEdit(row) {
+        this.${dollar}refs["dialog"].editDialog(row);
+      },
+      doDelete(row) {
+        const that = this;
+          that.${dollar}Modal.confirm({
+          title: '提示',
+          content: '您确定要删除吗?',
+          closable:true,
+          onOk: () => {
+          that.${dollar}post("/api/${table.varName}/delete", {${id.lowerCamel}: row.${id.lowerCamel}}).then(res => {
+				if(res.code !== 0){
+					that.${dollar}Message.error({content: res.errmsg ? res.errmsg : '删除${table.comment}失败'});
+					return ;
+				}
+				that.${dollar}Message.success({ content: '删除成功' });
+				that.refresh();
+			  }).catch(res => {
+				that.${dollar}Message.error({ content: '删除失败：' + res });
+			  });
+        },
+          onCancel: () => {
+          }
+        });
+      }
+    }
+  }
+</script>
+<style></style>

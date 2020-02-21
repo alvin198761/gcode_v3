@@ -13,7 +13,6 @@
         <module>code_utils</module>
         <module>code_jdbc</module>
         <module>code_ui3</module>
-        <module>demo</module>
     </modules>
 
     <parent>

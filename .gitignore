@@ -70,4 +70,11 @@ gcode_v3/code_ui3/target/
 gcode_v3/code_utils/target/
 gcode_v3/code_ui3/src/main/resources/static/
 gcode_v3/code_ui3/src/main/resources/templates/
+gcode_v3/jdbctemplate_elementui/.idea/
+gcode_v3/jdbctemplate_elementui/target/
 
+
+jdbctemplate_elementui/.idea/
+jdbctemplate_elementui/target/
+jdbctemplate_elementui/src/main/resources/static/
+jdbctemplate_elementui/src/main/resources/templates/

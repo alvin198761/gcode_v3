@@ -1,0 +1,168 @@
+/*${table.comment}管理,作者:${author},日期:${time}*/
+<template>
+<Drawer :title="title" v-model="show" :scrollable="false" :mask-closable="false" width="600" draggable transfer>
+        <Form :model="form" ref="form" :rules="rules" :label-width="100">
+				#foreach($fi in $fList)
+				#if($fi.name != $id.name)
+						 
+				 <Row>
+					<i-col>
+						<FormItem label="${fi.comment}" prop="${fi.lowerCamel}">
+							#if($fi.isFk == 1)
+							<!-- ${fi.lowerCamel} -->
+							<Select placeholder="请输入${fi.comment}" size="small" v-model="form.${fi.lowerCamel}" clearable style="width: 100%">
+								<Option
+										v-for="item in ${fi.lowerCamel}FkList"
+										:key="item.value"
+										:label="item.label"
+										:value="item.value">
+								</Option>
+							</Select>
+							#elseif ($fi.allTypeName == "java.util.Date")
+							<DatePicker size="small" v-model="form.${fi.lowerCamel}" type="date" placeholder="请输入${fi.comment}" clearable style="width: 100%"></DatePicker>
+							#elseif($fi.allTypeName == "java.lang.Long")
+							<InputNumber placeholder='请输入${fi.comment}' size="small" v-model='form.${fi.lowerCamel}'  clearable style="width: 100%"></InputNumber>
+							#elseif($fi.allTypeName == "java.lang.Integer")
+							<InputNumber placeholder='请输入${fi.comment}' size="small" v-model='form.${fi.lowerCamel}'  clearable style="width: 100%"></InputNumber>
+							#elseif($fi.allTypeName == "java.lang.Double")
+							<InputNumber placeholder='请输入${fi.comment}' size="small" v-model='form.${fi.lowerCamel}'  clearable style="width: 100%"></InputNumber>
+							#elseif($fi.allTypeName == "java.lang.Short")
+							<InputNumber placeholder='请输入${fi.comment}' size="small" v-model='form.${fi.lowerCamel}'  clearable style="width: 100%"></InputNumber>
+							#elseif($fi.allTypeName == "java.lang.Byte")
+							<Select placeholder="请输入${fi.comment}" size="small" v-model="form.${fi.lowerCamel}" clearable style="width: 100%">
+								<Option
+										v-for="item in ${fi.lowerCamel}List"
+										:key="item.id"
+										:label="item.label"
+										:value="item.id">
+								</Option>
+							</Select>
+							#else 
+							<Input placeholder="请输入${fi.comment}" size="small" v-model="form.${fi.lowerCamel}" clearable style="width: 100%"></Input>
+							#end
+						</FormItem>
+					</i-col>
+				</Row>
+				#end
+				#end
+               </Form>
+        <div  class="drawer-footer">
+            <Button @click="show = false">取消</Button>
+            <Button type="primary" @click="save()">确定</Button>
+        </div>
+    </Drawer>
+    </template>
+<script>
+  export default {
+    components: {},
+    props: ["refresh"],
+    data() {
+      return {
+        title: '',
+        form: this.initForm(),
+        dialogMode: "save",
+        show: false,
+        rules: {
+		// {min: 1, max: 10, message: '长度不正确', trigger: 'blur'}, 
+        #foreach($fi in $fList)
+			#if($fi.name == $id.name)
+				//主键不处理
+			#else
+				${fi.name} :[
+				#if ($field.allTypeName == "java.util.Date")
+				{required: true,  type:'date', message: '请输入${fi.comment}', trigger: 'blur'},  
+				#elseif($field.allTypeName == "java.lang.String")
+				{required: true,  type:'date', message: '请输入${fi.comment}', trigger: 'blur'},  
+				#else
+				{required: true, type:'number', message: '请输入${field.comment}', trigger: 'blur'},
+				#end
+				],
+			#end
+		#end
+        },
+		#foreach($fi in $fList)
+			#if($fi.isFk == 1)
+			${fi.lowerCamel}FkList:[],
+			#elseif($fi.allTypeName == "java.lang.Byte")
+			${fi.lowerCamel}List: [],
+			#end
+		#end
+      }
+    },
+    methods: {
+	#foreach($fi in $fList)
+		#if($fi.isFk == 1)
+		load${fi.upperCamel}FkList(){
+			const that = this;
+			that.${dollar}postBody("/api/${fi.fkTableClassName}/queryLabelList",{}).then(res =>{
+				if(res.code !== 0){
+					that.${dollar}message.error({content: res.errmsg});
+					return ;
+				}
+				that.${fi.lowerCamel}FkList = res.data;
+			}).catch(err => {
+				that.${dollar}Message.error({content: "获取数据出错:" + err});
+			})
+		},
+		#elseif($fi.allTypeName == "java.lang.Byte")
+		  load${fi.upperCamel}List(){
+			const that = this;
+			//todo 常量状态处理
+		  },
+	  	#end
+	#end
+	  initData(){
+		//初始化数据
+		#foreach($fi in $fList)
+			#if($fi.isFk == 1)
+				this.load${fi.upperCamel}FkList();
+			#elseif($fi.allTypeName == "java.lang.Byte")
+				this.load${fi.upperCamel}List();
+			#end
+		#end
+	  },
+      save() {//新增及修改记录
+        const that = this;
+        that.${dollar}refs['form'].validate((valid) => {
+              if (!valid) {
+                return;
+              }
+              that.${dollar}postBody("/api/${table.varName}/" + that.dialogMode, that.form).then(res => {
+                that.show = false;
+				if(res.code != 0){
+					that.${dollar}Message.error({content: res.errmsg ? res.errmsg : that.title+'失败'});
+					return ;
+				}
+                that.${dollar}Message.success({ content: that.title+'成功'});
+                that.refresh();
+              }).catch(res => {
+                that.${dollar}Message.error({ content: that.title+'失败:' + res });
+              });
+        });
+      },
+      initForm() {//初始数据
+        return {
+          #foreach($fi in $fList)
+              ${fi.name} : null,// ${fi.comment}
+          #end
+        }
+      },
+      addDialog() {//新增
+        this.title = "新增${table.comment}";
+        this.dialogMode = "save";
+        this.form = this.initForm();
+		this.initData();
+        this.show = true;
+      },
+      editDialog(row) {//修改
+        this.title = "修改${table.comment}";
+        this.dialogMode = "update";
+        this.form = {...row};
+		this.initData();
+        this.show = true;
+      },
+    }
+
+  }
+</script>
+<style></style>
