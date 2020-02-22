@@ -35,7 +35,7 @@ public class GenCodeService {
 
     @Autowired
     private GenCodeDao genCodeDao;
-    private String templateDir = new File(System.getProperty("user.dir")).getParentFile().getAbsolutePath() + "/templates/";
+    private String templateDir = new File(System.getProperty("user.dir")).getParentFile().getParentFile().getAbsolutePath() + "/templates/";
     @Autowired
     private VmFileService vmFileService;
     @Autowired
@@ -51,8 +51,8 @@ public class GenCodeService {
      *
      * @return
      */
-    public List<TableBean> queryTables() {
-        List<TableBean> list = this.genCodeDao.queryTables();
+    public List<TableBean> queryTables(boolean showConfigTable) {
+        List<TableBean> list = this.genCodeDao.queryTables(showConfigTable);
         List<AlvinGenCodeConfig> configList = this.genCodeConfigDao.queryList(list.parallelStream().map(TableBean::getTableName).collect(Collectors.toList()));
         Map<String, String> configMap = Maps.newHashMap();
         for (AlvinGenCodeConfig config : configList) {
@@ -60,7 +60,6 @@ public class GenCodeService {
         }
 
         return list.parallelStream().map(item -> {
-//            item.setClassName(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, item.getTableName()));
             String className = item.getTableName().substring(item.getTableName().indexOf("_") + 1);//去前缀
             item.setClassName(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, className));
             item.setVarName(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, className));
@@ -241,9 +240,9 @@ public class GenCodeService {
      * @param tableName
      * @return
      */
-    public List<RefTableDto> loadRefTables(String tableName) {
+    public List<RefTableDto> loadRefTables(String tableName, boolean showConfigTable) {
         //循环查询
-        return this.genCodeDao.queryRefTables(tableName).parallelStream().map(item -> {
+        return this.genCodeDao.queryRefTables(tableName, showConfigTable).parallelStream().map(item -> {
             item.setFields(Lists.newArrayList(item.getCols().split(",")));
             return item;
         }).collect(Collectors.toList());
@@ -267,7 +266,13 @@ public class GenCodeService {
             ref.setRefColName(item.getRefColName());
             ref.setRefTableName(item.getRefTableName());
         });
-        return refFieldDtos;
+        return refFieldDtos.parallelStream().map(ref -> {
+            FieldBean fieldBean = this.genCodeDao.getField(ref.getTableName(), ref.getColName());
+            if (fieldBean != null) {
+                ref.setComment(fieldBean.getComment());
+            }
+            return ref;
+        }).collect(Collectors.toList());
     }
 
     /**

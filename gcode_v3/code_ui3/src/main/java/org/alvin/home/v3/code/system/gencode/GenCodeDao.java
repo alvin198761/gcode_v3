@@ -115,7 +115,7 @@ public class GenCodeDao {
             sb.append(" ) ");
             log.info(sb.toString());
             return jdbcTemplate.query(sb.toString(), new Object[]{dbName}, new BeanPropertyRowMapper<>(FieldBean.class));
-        }else{
+        } else {
             return Lists.newArrayList();
         }
     }
@@ -147,16 +147,23 @@ public class GenCodeDao {
     /**
      * @功能描述: 查询表名列表
      */
-    public List<TableBean> queryTables() {
-        String sql = "SELECT table_name tableName,if(table_comment='',table_name,table_comment) comment FROM information_schema.tables WHERE table_schema=? AND TABLE_NAME NOT LIKE 't_alvin_gen_code_%'";
+    public List<TableBean> queryTables(boolean showConfigTable) {
+        String sql = "SELECT table_name tableName,if(table_comment='',table_name,table_comment) comment FROM information_schema.tables WHERE table_schema=? ";
+        if (showConfigTable) {
+            sql += " AND TABLE_NAME NOT LIKE 't_alvin_gen_code_%'";
+        }
         return jdbcTemplate.query(sql, new Object[]{dbName}, new BeanPropertyRowMapper<>(TableBean.class));
     }
 
     /**
      * @功能描述: 查询表名列表
      */
-    public List<RefTableDto> queryRefTables(String tableName) {
-        String sql = "select t.table_name ,GROUP_CONCAT( t.column_name) as cols  FROM INFORMATION_SCHEMA.COLUMNS t where table_schema=? AND table_name <> ? AND TABLE_NAME NOT LIKE 't_alvin_gen_code_%' GROUP BY t.table_name ";
+    public List<RefTableDto> queryRefTables(String tableName, boolean showConfigTable) {
+        String sql = "select t.table_name ,GROUP_CONCAT( t.column_name) as cols  FROM INFORMATION_SCHEMA.COLUMNS t where table_schema=? AND table_name <> ?   ";
+        if (showConfigTable) {
+            sql += " AND TABLE_NAME NOT LIKE 't_alvin_gen_code_%'";
+        }
+        sql += " GROUP BY t.table_name ";
         return jdbcTemplate.query(sql, new Object[]{dbName, tableName}, new BeanPropertyRowMapper<>(RefTableDto.class));
     }
 
@@ -274,6 +281,7 @@ public class GenCodeDao {
             sqlExec.execute();
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -295,4 +303,9 @@ public class GenCodeDao {
         }
     }
 
+    public FieldBean getField(String tableName, String col) {
+        StringBuilder sb = new StringBuilder(fieldsCommonSql());
+        sb.append(" AND table_schema = ? and table_name = ? AND column_name = ?");
+        return jdbcTemplate.queryForObject(sb.toString(), new Object[]{dbName, tableName, col}, new BeanPropertyRowMapper<>(FieldBean.class));
+    }
 }

@@ -29,5 +29,6 @@ public class AlvinGenCodeRef {
     
     //此处可添加查询显示辅助字段
         private String refTableShortName; //简写表名
+        private String comment;//注释
 
 }

@@ -19,5 +19,6 @@ public class GenCodeConfig {
         log.info("执行初始化sql");
         this.genCodeService.initData("/sql/create_config_table.sql");
         this.genCodeService.initData("/sql/create_ref_table.sql");
+        this.genCodeService.initData("/sql/create_const_table.sql");
     }
 }

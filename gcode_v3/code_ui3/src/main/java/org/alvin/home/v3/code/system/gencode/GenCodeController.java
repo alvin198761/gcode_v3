@@ -34,8 +34,8 @@ public class GenCodeController {
      * @return
      */
     @PostMapping("queryTables")
-    public RestApiResult<List<TableBean>> queryTables() {
-        return new RestApiResult<>(this.genCodeService.queryTables());
+    public RestApiResult<List<TableBean>> queryTables(@RequestParam("showConfigTable") boolean showConfigTable) {
+        return new RestApiResult<>(this.genCodeService.queryTables(showConfigTable));
     }
 
     /**
@@ -137,29 +137,31 @@ public class GenCodeController {
      * @throws Exception
      */
     @PostMapping("loadRefTables")
-    public RestApiResult<List<RefTableDto>> loadRefTables(@RequestParam("tableName") String tableName) throws Exception {
-        return new RestApiResult<>(this.genCodeService.loadRefTables(tableName));
+    public RestApiResult<List<RefTableDto>> loadRefTables(@RequestParam("tableName") String tableName ,@RequestParam("showConfigTable") boolean showConfigTable) throws Exception {
+        return new RestApiResult<>(this.genCodeService.loadRefTables(tableName, showConfigTable));
     }
 
     /**
      * 加载字段关联关系
+     *
      * @param tableName
      * @return
      * @throws Exception
      */
     @PostMapping("loadFields")
-    public RestApiResult<List<AlvinGenCodeRef>>  loadFields(@RequestParam("tableName") String tableName) throws Exception {
+    public RestApiResult<List<AlvinGenCodeRef>> loadFields(@RequestParam("tableName") String tableName) throws Exception {
         return new RestApiResult<>(this.genCodeService.loadFields(tableName));
     }
 
     /**
      * 表格设置
+     *
      * @param settings
      * @return
      */
     @PostMapping("tableSettings")
-    public RestApiResult<Integer> tableSettings(@RequestBody TableSettingsDto settings){
-        return new RestApiResult< >(this.genCodeService.tableSettings(settings));
+    public RestApiResult<Integer> tableSettings(@RequestBody TableSettingsDto settings) {
+        return new RestApiResult<>(this.genCodeService.tableSettings(settings));
     }
 
 }
