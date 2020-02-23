@@ -145,7 +145,8 @@ public class GenCodeService {
                         item.setFkCol(fk.getRefColName());
                         item.setFkTable(fk.getRefTableName());
                         item.setFkTableClassName(CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, fk.getRefTableName()));
-                        item.setIsFk(1);
+                        item.setIsFk(fk.getRefType());
+                        item.setRefConstTypeName(fk.getRefConstTypeKey());
                     }
                 }
                 item.setMbDbType(this.jdbc2MbTypeService.getType(item.getDbType()));
@@ -265,6 +266,8 @@ public class GenCodeService {
             AlvinGenCodeRef ref = refMap.get(item.getColName());
             ref.setRefColName(item.getRefColName());
             ref.setRefTableName(item.getRefTableName());
+            ref.setRefType(item.getRefType());
+            ref.setRefConstTypeKey(item.getRefConstTypeKey());
         });
         return refFieldDtos.parallelStream().map(ref -> {
             FieldBean fieldBean = this.genCodeDao.getField(ref.getTableName(), ref.getColName());
