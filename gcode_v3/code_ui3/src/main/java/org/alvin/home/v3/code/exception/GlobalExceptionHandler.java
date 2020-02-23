@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BizException.class)
     public RestApiResult handleBizException(BizException ex) {
         log.error(ex.getMessage(), ex);
-        return new RestApiResult(0, ex.getErrMsg());
+        return new RestApiResult(500, ex.getErrMsg());
     }
 
     /**
@@ -55,7 +55,7 @@ public class GlobalExceptionHandler {
     public RestApiResult handleBindException(BindException ex) {
         log.error(ex.getMessage(), ex);
         String msg = ex.getBindingResult().getFieldErrors().stream().map(FieldError::getDefaultMessage).collect(Collectors.joining(";"));
-        return new  RestApiResult(0,msg);
+        return new  RestApiResult(500,msg);
     }
 
     /**
@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ValidationException.class)
     public RestApiResult handleValidationException(ValidationException ex) {
         log.error(ex.getMessage(), ex);
-        return new  RestApiResult(0,ex.getMessage());
+        return new  RestApiResult(500,ex.getMessage());
     }
 
     /**
@@ -84,7 +84,7 @@ public class GlobalExceptionHandler {
     public RestApiResult handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         log.error(ex.getMessage(), ex);
         String msg = ex.getBindingResult().getFieldErrors().stream().map(FieldError::getDefaultMessage).collect(Collectors.joining(";"));
-        return new  RestApiResult(0,msg);
+        return new  RestApiResult(500,msg);
     }
 
     /**
@@ -98,7 +98,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public RestApiResult handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
         log.error(ex.getMessage(), ex);
-        return new  RestApiResult(0,ex.getMessage());
+        return new  RestApiResult(500,ex.getMessage());
     }
 
     /**
@@ -112,7 +112,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
     public RestApiResult handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
         log.error(ex.getMessage(), ex);
-        return new  RestApiResult(0,"服务器错误");
+        return new  RestApiResult(500,"服务器错误");
     }
 
     /**
@@ -126,7 +126,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     public RestApiResult handleException(Exception ex) {
         log.error(ex.getMessage(), ex);
-        return new  RestApiResult(0,"服务器错误");
+        return new  RestApiResult(500,"服务器错误");
     }
 
 

@@ -2,7 +2,7 @@
 <template>
       <div>
           <!-- <h3>${cName}</h3> <hr/> -->
-            <el-form :inline="true">
+            <el-form :inline="true" class="searchForm">
                 #foreach($field in $fList)
                     <el-form-item label="${field.comment}">
                         <el-input placeholder="请输入${field.comment}" size="small" v-model="form.${field.lowerCamel}"></el-input>

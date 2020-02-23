@@ -1,15 +1,17 @@
 package org.alvin.home.v3.code.system.alvingencodeconst;
-
-import lombok.extern.slf4j.Slf4j;
-import org.alvin.code.gen.utils.Page;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.alvin.code.gen.utils.Page;
+import org.springframework.web.bind.annotation.*;
+import lombok.extern.slf4j.Slf4j;
 /**
 * @类说明: 常量字典表--数据控制器层
 * @author: 唐植超
-* @date : 2020-02-22 17:44:21
+* @date : 2020-02-23 14:37:44
 **/
 @Slf4j
 @RestController

@@ -4,9 +4,9 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import java.util.ArrayList;
-import org.alvin.cishan.common.BaseDao;
-import org.alvin.cishan.sys.util.SqlUtil;
-import org.alvin.cishan.sys.util.Page;
+import org.alvin.code.gen.beans.BaseDao;
+import org.alvin.code.gen.utils.Page;
+import org.alvin.code.gen.utils.SqlUtil;
 import com.google.common.base.Joiner;
 import lombok.extern.slf4j.Slf4j;
 /**
@@ -43,9 +43,9 @@ public class ${table.className}Dao extends BaseDao{
     /**
     * @方法说明：新增${table.comment}记录并返回自增涨主键值
     */
-    public long saveReturnPK(${table.className} vo) {
-         return saveKey(vo, insert.toString(), "${id.name}");
-    }
+  //  public long saveReturnPK(${table.className} vo) {
+  //       return saveKey(vo, insert.toString(), "${id.name}");
+  //  }
     
     /**
     * @方法说明：批量插入${table.comment}记录

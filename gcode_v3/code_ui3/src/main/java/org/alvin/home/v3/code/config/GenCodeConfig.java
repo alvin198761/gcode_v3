@@ -20,5 +20,6 @@ public class GenCodeConfig {
         this.genCodeService.initData("/sql/create_config_table.sql");
         this.genCodeService.initData("/sql/create_ref_table.sql");
         this.genCodeService.initData("/sql/create_const_table.sql");
+        this.genCodeService.initData("/sql/create_const_value_table.sql");
     }
 }

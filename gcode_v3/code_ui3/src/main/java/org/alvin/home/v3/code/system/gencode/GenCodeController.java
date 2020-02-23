@@ -3,7 +3,7 @@ package org.alvin.home.v3.code.system.gencode;
 import org.alvin.home.v3.code.beans.EntityConfig;
 import org.alvin.home.v3.code.beans.RestApiResult;
 import org.alvin.home.v3.code.beans.TableBean;
-import org.alvin.home.v3.code.system.gencoderef.AlvinGenCodeRef;
+import org.alvin.home.v3.code.system.alvingencoderef.AlvinGenCodeRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;

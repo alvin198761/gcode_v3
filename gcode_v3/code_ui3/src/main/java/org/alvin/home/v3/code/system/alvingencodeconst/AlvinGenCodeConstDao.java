@@ -1,31 +1,32 @@
 package org.alvin.home.v3.code.system.alvingencodeconst;
-import java.util.List;
 
+import com.google.common.base.Joiner;
+import lombok.extern.slf4j.Slf4j;
 import org.alvin.code.gen.beans.BaseDao;
 import org.alvin.code.gen.utils.Page;
 import org.alvin.code.gen.utils.SqlUtil;
-import org.springframework.stereotype.Repository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.stereotype.Repository;
+
 import java.util.ArrayList;
-import com.google.common.base.Joiner;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 /**
 * @类说明: 常量字典表--数据访问层
 * @author: 唐植超
-* @date : 2020-02-22 17:44:21
+* @date : 2020-02-23 14:37:44
 **/
 @Slf4j
 @Repository
-public class AlvinGenCodeConstDao extends BaseDao {
+public class AlvinGenCodeConstDao extends BaseDao{
 
     private StringBuilder insert = new StringBuilder();
-
     /**
     * @方法说明：  构造方法,用于拼加SQL及初始化工作
     */
     public AlvinGenCodeConstDao () {
-        insert.append("INSERT INTO t_alvin_gen_code_const (type_key,type_label,value_key,value_label) ");
-        insert.append(" VALUES (:typeKey,:typeLabel,:valueKey,:valueLabel)");
+        insert.append("INSERT INTO t_alvin_gen_code_const (type_key,type_label) ");
+        insert.append(" VALUES (:typeKey,:typeLabel)");
     }
 
     /**
@@ -33,9 +34,9 @@ public class AlvinGenCodeConstDao extends BaseDao {
     */
     public int save(AlvinGenCodeConst vo) {
         StringBuilder sql = new StringBuilder();
-        sql.append("REPLACE INTO t_alvin_gen_code_const (id,type_key,type_label,value_key,value_label)");
-        sql.append(" VALUES (?,?,?,?,?) ");
-        Object[] params ={ vo.getId(),vo.getTypeKey(),vo.getTypeLabel(),vo.getValueKey(),vo.getValueLabel() };
+        sql.append("REPLACE INTO t_alvin_gen_code_const (id,type_key,type_label)");
+        sql.append(" VALUES (?,?,?) ");
+        Object[] params ={ vo.getId(),vo.getTypeKey(),vo.getTypeLabel() };
         //log.info(SqlUtil.showSql(sql.toString(), params));//显示SQL语句
         return jdbcTemplate.update(sql.toString(), params);
     }
@@ -43,9 +44,9 @@ public class AlvinGenCodeConstDao extends BaseDao {
     /**
     * @方法说明：新增常量字典表记录并返回自增涨主键值
     */
-//    public long saveReturnPK(AlvinGenCodeConst vo) {
-//         return saveKey(vo, insert.toString(), "id");
-//    }
+  //  public long saveReturnPK(AlvinGenCodeConst vo) {
+  //       return saveKey(vo, insert.toString(), "id");
+  //  }
     
     /**
     * @方法说明：批量插入常量字典表记录
@@ -67,9 +68,9 @@ public class AlvinGenCodeConstDao extends BaseDao {
     */
     public int update(AlvinGenCodeConst vo) {
         StringBuilder sql = new StringBuilder();
-        sql.append("UPDATE t_alvin_gen_code_const SET type_key=?,type_label=?,value_key=?,value_label=? ");
+        sql.append("UPDATE t_alvin_gen_code_const SET type_key=?,type_label=? ");
         sql.append(" WHERE id=? ");
-        Object[] params = {vo.getTypeKey(),vo.getTypeLabel(),vo.getValueKey(),vo.getValueLabel()};
+        Object[] params = {vo.getTypeKey(),vo.getTypeLabel()};
         return jdbcTemplate.update(sql.toString(), params);
       }
 
@@ -89,16 +90,6 @@ public class AlvinGenCodeConstDao extends BaseDao {
         if(vo.getTypeLabel() != null){
             fields.add(" type_label = ? ");
             values.add(vo.getTypeLabel());
-        }   
-                                
-        if(vo.getValueKey() != null){
-            fields.add(" value_key = ? ");
-            values.add(vo.getValueKey());
-        }   
-                                
-        if(vo.getValueLabel() != null){
-            fields.add(" value_label = ? ");
-            values.add(vo.getValueLabel());
         }   
                         
         if(fields.isEmpty()){
@@ -178,7 +169,7 @@ public class AlvinGenCodeConstDao extends BaseDao {
     */
     public String getSelectedItems(AlvinGenCodeConstCond cond){
         if(cond == null || cond.getSelectedFields() == null || cond.getSelectedFields().isEmpty()){
-        return "t.id,t.type_key,t.type_label,t.value_key,t.value_label"; //默认所有字段
+        return "t.id,t.type_key,t.type_label"; //默认所有字段
         }
         return Joiner.on(",").join(cond.getSelectedFields());
     }
@@ -190,4 +181,5 @@ public class AlvinGenCodeConstDao extends BaseDao {
     public String getJoinTables(){
         return "";
     }
+
 }
